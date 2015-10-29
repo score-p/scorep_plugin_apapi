@@ -16,7 +16,7 @@ To compile this plugin, you need:
 
 * PAPI (`5.2+`)
 
-* VampirTrace (`5.14+`) or Score-P
+* Score-P or VampirTrace (`5.14+`)
 
 ###Building
 
@@ -32,9 +32,6 @@ To compile this plugin, you need:
     use alternatively the environment variables `VT_DIR`, `SCOREP_DIR` and  `PAPI_INC`, e.g.
 
         cmake .. -DSCOREP_DIR=/opt/scorep -DPAPI_INC=/opt/papi/inc
-    or
-
-        cmake .. -DBACKEND_SCOREP=off -DVT_DIR=/opt/vampirtrace -DPAPI_INC=/opt/papi/inc
 
 3. Invoke make
 
@@ -46,14 +43,27 @@ To compile this plugin, you need:
 
 ##Usage
 
+###Score-P
+
+To use this plugin, add it to the `SCOREP_METRIC_PLUGINS` environment variable, e.g.:
+
+    export SCOREP_METRIC_PLUGINS="APAPI"
+
+All avaible papi counter should be avaible in this plugin. To use them, simply set the
+`SCOREP_METRIC_APAPI_PLUGIN` environment variable. Prefix the PAPI counter name with A, e.g.
+
+    export SCOREP_METRIC_APAPI_PLUGIN="APAPI_L2_TCM:APAPI_FP_INS"
+
+###VampirTrace
+
 All avaible papi counter should be avaible in this plugin. To use them, simply set the
 `VT_PLUGIN_CNTR_METRICS` environment variable. Prefix the PAPI counter name with A, e.g.
 
-    export VT_PLUGIN_CNTR_METRICS=APAPI_L2_TCM:APAPI_FP_INS
+    export VT_PLUGIN_CNTR_METRICS="APAPI_L2_TCM:APAPI_FP_INS"
 
 ###Environment variables
 
-* `VT_APAPI_INTERVAL_US` (default=100000)
+* `SCOREP_METRIC_APAPI_INTERVAL_US`/`VT_APAPI_INTERVAL_US` (default=100000)
 
     Specifies the interval in usecs, when the register is read.
 
@@ -63,7 +73,7 @@ All avaible papi counter should be avaible in this plugin. To use them, simply s
     To gain most exact values, you should set the interval to 100, if you can live with less
     precision, you should set it to 10000.
 
-* `VT_APAPI_BUF_SIZE` (default=4M)
+* `SCOREP_METRIC_APAPI_BUF_SIZE`/`VT_APAPI_BUF_SIZE` (default=4M)
 
     The size of the buffer for storing samples. Can be suffixed with G, M, and K.
 
