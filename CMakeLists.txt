@@ -1,43 +1,34 @@
 cmake_minimum_required(VERSION 2.8)
-project(APAPI)
-
-#set(CMAKE_C_COMPILER clang)
-#plugin source files
-set(PLUGIN_SOURCE apapi.c)
-
+project(apapi_plugin)
 
 option(VT_INC "Path of the vampirtrace headers" "")
 option(PAPI_INC "Path of the PAPI headers" "")
-
 OPTION(BACKEND_SCOREP "Build plugin using scorep(ON) or vampirtrace(OFF)" ON)
 
-#additional c flags
-set(CMAKE_C_FLAGS "-D_GNU_SOURCE -std=c11 -O2 -g")
+set(PLUGIN_SOURCE apapi.c)
+
 
 if(BACKEND_SCOREP)
     include(common/FindScorep.cmake)
     if(SCOREP_FOUND)
         include_directories(${SCOREP_INCLUDE_DIRS})
+        add_definitions("-DBACKEND_SCOREP")
     else()
-        message(SEND_ERROR "Scorep was not found but is required!")
+        message("Score-P was not found, falling back to VampirTrace!")
     endif()
-    add_definitions("-DBACKEND_SCOREP")
-else()
+endif()
+
+if(NOT SCOREP_FOUND OR NOT BACKEND_SCOREP)
     include(common/FindVampirTrace.cmake)
     if(VT_FOUND)
         include_directories(${VT_INCLUDE_DIRS})
+        add_definitions("-DBACKEND_VTRACE")
     else()
-        message(SEND_ERROR "Vampirtrace was not found but is required!")
+        message(SEND_ERROR "Found neither Score-P nor VampirTrace backend!")
     endif()
-    add_definitions("-DBACKEND_VTRACE")
 endif()
 
 
-#debugging c flags
-set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DHAVE_DEBUG -O0 -Wstrict-prototypes -Wall -Wundef -Wno-long-long -Wsign-compare -Wcomment -pedantic -finline-functions -fno-strict-aliasing")
-set(CMAKE_C_FLAGS_RELEASE "-Os")
-
-#Find PAPI inlcude directory
 unset(__PAPI_INC CACHE)
 find_path(__PAPI_INC NAMES "papi.h" HINTS ${PAPI_INC} $ENV{PAPI_INC})
 if(NOT IS_ABSOLUTE ${__PAPI_INC})
@@ -45,6 +36,16 @@ if(NOT IS_ABSOLUTE ${__PAPI_INC})
 endif(NOT IS_ABSOLUTE ${__PAPI_INC})
 message(STATUS "Found PAPI headers in ${__PAPI_INC}.")
 
+
+#additional c flags
+set(CMAKE_C_FLAGS "-D_GNU_SOURCE -std=c11 -O2 -g")
+#debugging c flags
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DHAVE_DEBUG -O0 -Wstrict-prototypes -Wall -Wundef -Wno-long-long -Wsign-compare -Wcomment -pedantic -finline-functions -fno-strict-aliasing")
+#release c flags
+set(CMAKE_C_FLAGS_RELEASE "-Os")
+
 include_directories( ${__PAPI_INC})
 add_library(${PROJECT_NAME} SHARED ${PLUGIN_SOURCE})
-target_link_libraries(${PROJECT_NAME}  pthread m)
+target_link_libraries(${PROJECT_NAME} pthread m)
+
+install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION lib)

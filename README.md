@@ -47,19 +47,19 @@ To compile this plugin, you need:
 
 To use this plugin, add it to the `SCOREP_METRIC_PLUGINS` environment variable, e.g.:
 
-    export SCOREP_METRIC_PLUGINS="APAPI"
+    export SCOREP_METRIC_PLUGINS="apapi_plugin"
 
 All avaible papi counter should be avaible in this plugin. To use them, simply set the
 `SCOREP_METRIC_APAPI_PLUGIN` environment variable. Prefix the PAPI counter name with A, e.g.
 
-    export SCOREP_METRIC_APAPI_PLUGIN="APAPI_L2_TCM:APAPI_FP_INS"
+    export SCOREP_METRIC_APAPI_PLUGIN="L2_TCM:FP_INS"
 
 ###VampirTrace
 
 All avaible papi counter should be avaible in this plugin. To use them, simply set the
 `VT_PLUGIN_CNTR_METRICS` environment variable. Prefix the PAPI counter name with A, e.g.
 
-    export VT_PLUGIN_CNTR_METRICS="APAPI_L2_TCM:APAPI_FP_INS"
+    export VT_PLUGIN_CNTR_METRICS="apapi_plugin_L2_TCM:apapi_plugin_FP_INS"
 
 ###Environment variables
 
