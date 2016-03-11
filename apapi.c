@@ -1,21 +1,30 @@
 /*
-   libAPAPIPlugin.so,
-   a library to count Uncore events on a SandyBridge E processor for VampirTrace.
-   Copyright (C) 2012 TU Dresden, ZIH
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License, v2, as
-   published by the Free Software Foundation
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * Copyright (c) 2016, Technische Universität Dresden, Germany
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification, are permitted
+ * provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this list of conditions
+ *    and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions
+ *    and the following disclaimer in the documentation and/or other materials provided with the
+ *    distribution.
+ *
+ * 3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse
+ *    or promote products derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+ * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+ * IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
+ * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -66,7 +75,7 @@
 
 struct vt_stuff {
     int32_t data_count;
-    timevalue_t *result_vector; 
+    timevalue_t *result_vector;
 };
 
 static int EventCodes[NUM_EVENTS];
@@ -100,41 +109,41 @@ static int interval_us = 100000; //100ms
 static
 size_t parse_buffer_size(const char *s)
 {
-	char *tmp = NULL;
-	size_t size;
+    char *tmp = NULL;
+    size_t size;
 
-	// parse number part
-	size = strtoll(s, &tmp, 10);
+    // parse number part
+    size = strtoll(s, &tmp, 10);
 
-	if (size == 0) 
-	{
-		fprintf(stderr, "Failed to parse buffer size ('%s'), using default %zu\n", s, DEFAULT_BUF_SIZE);
-		return DEFAULT_BUF_SIZE;
-	}
+    if (size == 0)
+    {
+        fprintf(stderr, "Failed to parse buffer size ('%s'), using default %zu\n", s, DEFAULT_BUF_SIZE);
+        return DEFAULT_BUF_SIZE;
+    }
 
-	// skip whitespace characters
-	while(*tmp == ' ') tmp++;
+    // skip whitespace characters
+    while(*tmp == ' ') tmp++;
 
-	switch(*tmp) 
-	{
-		case 'G': 
-			size *= 1024;
-			// fall through
-		case 'M':
-			size *= 1024;
-			// fall through
-		case 'K':
-			size *= 1024;
-			// fall through
-		default:
-			break;
-	}
+    switch(*tmp)
+    {
+        case 'G':
+            size *= 1024;
+            // fall through
+        case 'M':
+            size *= 1024;
+            // fall through
+        case 'K':
+            size *= 1024;
+            // fall through
+        default:
+            break;
+    }
 
-	return size;
+    return size;
 
 }
 
-void set_pform_wtime_function(uint64_t(*pform_wtime)(void)) 
+void set_pform_wtime_function(uint64_t(*pform_wtime)(void))
 {
     wtime = pform_wtime;
 }
@@ -143,11 +152,11 @@ void set_pform_wtime_function(uint64_t(*pform_wtime)(void))
 static inline
 uint64_t gettime()
 {
-	struct timespec ts;
+    struct timespec ts;
 
-	clock_gettime(CLOCK_REALTIME, &ts);
+    clock_gettime(CLOCK_REALTIME, &ts);
 
-	return (ts.tv_sec * 1E9 + ts.tv_nsec);
+    return (ts.tv_sec * 1E9 + ts.tv_nsec);
 }
 
 int32_t init(void)
@@ -156,7 +165,7 @@ int32_t init(void)
     int ret;
 
 #if defined(HAVE_DEBUG)
-	 fprintf(stderr, "APAPI: init called\n");
+     fprintf(stderr, "APAPI: init called\n");
 #endif
 
 #if defined(BACKEND_SCOREP)
@@ -176,16 +185,16 @@ int32_t init(void)
     }
 #if defined(BACKEND_SCOREP)
     env_string = getenv("SCOREP_METRIC_APAPI_BUF_SIZE");
-#elif defined(BACKEND_VTRACE) 
+#elif defined(BACKEND_VTRACE)
     env_string = getenv("VT_APAPI_BUF_SIZE");
 #endif
     if (env_string != NULL) {
         buf_size = parse_buffer_size(env_string);
-		  if (buf_size < 1024)
-		  {
-				fprintf(stderr, "Given buffer size (%zu) too small, falling back to default (%zu)\n", buf_size, DEFAULT_BUF_SIZE);
-				buf_size = DEFAULT_BUF_SIZE;
-		  }
+          if (buf_size < 1024)
+          {
+                fprintf(stderr, "Given buffer size (%zu) too small, falling back to default (%zu)\n", buf_size, DEFAULT_BUF_SIZE);
+                buf_size = DEFAULT_BUF_SIZE;
+          }
     }
     //max_data_count = (buf_size * 1024 * 1024) /  sizeof(vt_plugin_cntr_timevalue);
     //fprintf(stderr, "VT_APAPI_BUF_SIZE: using %dMB (%d Elements) per Event per Thread\n", buf_size, max_data_count);
@@ -194,19 +203,19 @@ int32_t init(void)
     if (ret != PAPI_VER_CURRENT) {
         if (ret > 0)
             fprintf(stderr, "cannot initialize library: PAPI library version does not match the version this plugin was compiled with!\n");
-        else 
+        else
             fprintf(stderr, "cannot initialize library: %s\n", PAPI_strerror(ret));
         return -1;
     }
 
-	return 0;
+    return 0;
 }
 
 metric_properties_t * get_event_info(char * event_name)
 {
     /* convert prepend PAPI_ to event name to get the event code
      * and prepend APAPI_ to create a meaningful counter name */
-	 int ret;
+     int ret;
     char papi_name[64];
     char apapi_name[64];
     memset(papi_name, 0, 64);
@@ -227,7 +236,7 @@ metric_properties_t * get_event_info(char * event_name)
         fprintf(stderr, "APAPI: event %s is not avaible on this architecture\n", event_name);
         return NULL;
     }
-    
+
     global_num_cntrs++;
 
     metric_properties_t *return_values = malloc(2 *
@@ -275,70 +284,70 @@ void * thread_report(void * _id)
     //memset(values, 0, sizeof(long long int));
 
 #if defined(HAVE_DEBUG)
-	 uint64_t start_time, end_time;
-	 uint64_t timesum = 0;
+     uint64_t start_time, end_time;
+     uint64_t timesum = 0;
 #endif
 
-	 struct event *ev = &event_list[id];
+     struct event *ev = &event_list[id];
 
-	 size_t num_buf_elems = buf_size/sizeof(long long);
+     size_t num_buf_elems = buf_size/sizeof(long long);
 
-	 ev->timevalues = calloc(num_buf_elems, sizeof(long long));
-	 size_t tv_pos = 0;
+     ev->timevalues = calloc(num_buf_elems, sizeof(long long));
+     size_t tv_pos = 0;
 
-	 ev->sample_count = 0;
+     ev->sample_count = 0;
 
     while (counter_enabled) {
         if (wtime == NULL)
             return NULL;
         if (ev->enabled) {
-    			//int i;
-				int ret;
-    			uint64_t timestamp;
+                //int i;
+                int ret;
+                uint64_t timestamp;
 
-				if ((tv_pos + ev->num_cntrs + 1) > num_buf_elems)
-				{
-					static int once = 0;
-					if (!once)
-					{
-						fprintf(stderr, "Buffer reached maximum %zuB. Loosing events.\n", (buf_size));
-						fprintf(stderr, "Set VT_APAPI_BUF_SIZE environment variable to increase buffer size\n");
-						once = 1;
-					}
-					break; // continue would lead to a busy wait
-				}
+                if ((tv_pos + ev->num_cntrs + 1) > num_buf_elems)
+                {
+                    static int once = 0;
+                    if (!once)
+                    {
+                        fprintf(stderr, "Buffer reached maximum %zuB. Loosing events.\n", (buf_size));
+                        fprintf(stderr, "Set VT_APAPI_BUF_SIZE environment variable to increase buffer size\n");
+                        once = 1;
+                    }
+                    break; // continue would lead to a busy wait
+                }
 
             /* measure time and read value */
             timestamp = wtime();
-				ev->timevalues[tv_pos] = timestamp;
-				tv_pos++;
+                ev->timevalues[tv_pos] = timestamp;
+                tv_pos++;
 #if defined(HAVE_DEBUG)
-				start_time = gettime();
+                start_time = gettime();
 #endif
             /* read papi counters */
             //ret = PAPI_accum(ev->EventSet, values);
             ret = PAPI_read(ev->EventSet, &ev->timevalues[tv_pos]);
             if (ret != PAPI_OK) {
                 fprintf(stderr, "failed to accum counters for id %d\n", id);
-					 return NULL;
+                     return NULL;
             }
             //ret = PAPI_reset(ev->EventSet);
-				//memcpy(&ev->timevalues[tv_pos], values, ev->num_cntrs * sizeof(long long));
-				//tv_cur += ev->num_cntrs;
-				tv_pos += ev->num_cntrs;
-				ev->sample_count++;
+                //memcpy(&ev->timevalues[tv_pos], values, ev->num_cntrs * sizeof(long long));
+                //tv_cur += ev->num_cntrs;
+                tv_pos += ev->num_cntrs;
+                ev->sample_count++;
 #if 0
             /* write the counter value with timestamp to vampirtrace result vector */
             for (i=0;i<ev->num_cntrs;i++) {
-					 struct vt_stuff *res = &(ev->res[i]);
+                     struct vt_stuff *res = &(ev->res[i]);
                 int dcount = res->data_count;
-					 if (dcount == max_data_count) {
-		    			static int once = 0;
-		    			if (!once) {
-                    	fprintf(stderr, "Buffer reached maximum %d. Loosing events.\n", max_data_count);
-                    	fprintf(stderr, "Set VT_APAPI_BUF_SIZE environment variable to increase buffer size\n");
-							once = 1;
-		    			}
+                     if (dcount == max_data_count) {
+                        static int once = 0;
+                        if (!once) {
+                        fprintf(stderr, "Buffer reached maximum %d. Loosing events.\n", max_data_count);
+                        fprintf(stderr, "Set VT_APAPI_BUF_SIZE environment variable to increase buffer size\n");
+                            once = 1;
+                        }
                   continue;
                 }
 
@@ -349,8 +358,8 @@ void * thread_report(void * _id)
 #endif
 
 #if defined(HAVE_DEBUG)
-				end_time = gettime();
-				timesum += end_time - start_time;
+                end_time = gettime();
+                timesum += end_time - start_time;
 #endif
 
         }
@@ -363,14 +372,14 @@ void * thread_report(void * _id)
         fprintf(stderr, "failed to stop counters for id %d\n", id);
     }
 #if 0
-	 uint64_t num_samples = 0;
-	 int i;
-	 for (i=0;i<event_list[id].num_cntrs;i++) {
-	 	num_samples += event_list[id].res[i].data_count;
-	 }
+     uint64_t num_samples = 0;
+     int i;
+     for (i=0;i<event_list[id].num_cntrs;i++) {
+        num_samples += event_list[id].res[i].data_count;
+     }
 #endif
 #if defined(HAVE_DEBUG)
-	 printf("INFO: Average time per sample query: %llu\n", timesum / ev->sample_count++);
+     printf("INFO: Average time per sample query: %llu\n", timesum / ev->sample_count++);
 #endif
     return NULL;
 }
@@ -383,14 +392,14 @@ int32_t add_counter(char * event_name)
     int ret;
     unsigned long cpu;
     pthread_mutex_lock(&add_counter_mutex);
-   
+
     /* use the thread id to identify the thread */
-    cpu = syscall(__NR_gettid); 
+    cpu = syscall(__NR_gettid);
     for (i=0;i<event_list_size;i++) {
         if (event_list[i].cpu == cpu) {
             is_thread_sampled = 1;
             id = i;
-				break;
+                break;
         }
     }
 
@@ -407,13 +416,13 @@ int32_t add_counter(char * event_name)
 
     counter_id = (id << 8) + event_list[id].num_cntrs;
 
-	 //event_list[id].res[counter_id].result_vector = malloc(max_data_count * sizeof(vt_plugin_cntr_timevalue));
-	 //event_list[id].res[counter_id].data_count    = 0;
-    
+     //event_list[id].res[counter_id].result_vector = malloc(max_data_count * sizeof(vt_plugin_cntr_timevalue));
+     //event_list[id].res[counter_id].data_count    = 0;
+
     event_list[id].num_cntrs++;
-    
-	 /* Unlock the mutex before any return can happen */
-	 pthread_mutex_unlock(&add_counter_mutex);
+
+     /* Unlock the mutex before any return can happen */
+     pthread_mutex_unlock(&add_counter_mutex);
 
     /* register PAPI event set when all counters have been added
      * and start the corresponding sampling thread */
@@ -422,10 +431,10 @@ int32_t add_counter(char * event_name)
             fprintf(stderr, "failed to create EventSet for id %d: %s\n", id, PAPI_strerror(ret));
             return -1;
         }
-        
+
         if ((ret = PAPI_add_events(event_list[id].EventSet, EventCodes, event_list[id].num_cntrs)) != PAPI_OK) {
             fprintf(stderr, "failed to add %i events for id %d: %s\n", global_num_cntrs, id, PAPI_strerror(ret));
-            return -1; 
+            return -1;
         }
 
         if ((ret = PAPI_start(event_list[id].EventSet)) != PAPI_OK) {
@@ -443,48 +452,48 @@ int32_t add_counter(char * event_name)
     return counter_id;
 }
 
-uint64_t get_all_values(int32_t id, timevalue_t **result) 
+uint64_t get_all_values(int32_t id, timevalue_t **result)
 {
-	 	int i;
+        int i;
     int evt_id = id >> 8;
     int cntr_id = id & 0xff;
 
-	 if (counter_enabled)
-	 {
-	 	counter_enabled = 0;
-    
-		for (i=0;i<event_list_size;i++) {
-        		pthread_join(event_list[i].thread, NULL);
-    		}
-	 }
+     if (counter_enabled)
+     {
+        counter_enabled = 0;
 
-	timevalue_t *res = malloc(event_list[evt_id].sample_count * sizeof(timevalue_t));
+        for (i=0;i<event_list_size;i++) {
+                pthread_join(event_list[i].thread, NULL);
+            }
+     }
+
+    timevalue_t *res = malloc(event_list[evt_id].sample_count * sizeof(timevalue_t));
   if (res == NULL)
   {
     fprintf(stderr, "APAPI: Failed to allocate memory for results\n");
     return 0;
   }
-	long long *timevalues = event_list[evt_id].timevalues;
-	size_t tv_pos = 0;
-	for (i = 0; i < event_list[evt_id].sample_count; i++)
-	{
-		res[i].timestamp = timevalues[tv_pos];
-		tv_pos++;
-		res[i].value = timevalues[tv_pos + cntr_id];
-		tv_pos += event_list[evt_id].num_cntrs;
-	}
-	*result = res;
-	
-	return event_list[evt_id].sample_count;
+    long long *timevalues = event_list[evt_id].timevalues;
+    size_t tv_pos = 0;
+    for (i = 0; i < event_list[evt_id].sample_count; i++)
+    {
+        res[i].timestamp = timevalues[tv_pos];
+        tv_pos++;
+        res[i].value = timevalues[tv_pos + cntr_id];
+        tv_pos += event_list[evt_id].num_cntrs;
+    }
+    *result = res;
+
+    return event_list[evt_id].sample_count;
 }
 
-int enable_counter(int ID) 
+int enable_counter(int ID)
 {
     event_list[ID].enabled = 1;
     return 0;
 }
 
-int disable_counter(int ID) 
+int disable_counter(int ID)
 {
     event_list[ID].enabled = 0;
     return 0;
