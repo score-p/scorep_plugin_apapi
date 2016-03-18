@@ -500,7 +500,7 @@ int disable_counter(int ID)
 }
 
 #ifdef BACKEND_SCOREP
-SCOREP_METRIC_PLUGIN_ENTRY( APAPI )
+SCOREP_METRIC_PLUGIN_ENTRY( apapi_plugin )
 #endif
 #ifdef BACKEND_VTRACE
 vt_plugin_cntr_info get_info()
