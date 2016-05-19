@@ -65,13 +65,8 @@ All avaible papi counter should be avaible in this plugin. To use them, simply s
 
 * `SCOREP_METRIC_APAPI_INTERVAL_US`/`VT_APAPI_INTERVAL_US` (default=100000)
 
-    Specifies the interval in usecs, when the register is read.
-
-    A higher interval means less disturbance, a lower interval is more exact. The registers are
-    updated roughly every msec. If you choose your interval to be around 1ms you might find highly variating power consumptions.
-
-    To gain most exact values, you should set the interval to 100, if you can live with less
-    precision, you should set it to 10000.
+    Specifies the interval in usecs, at wich the performance counters are read.
+    A higher interval means less disturbance, a lower interval provides more resolution.
 
 * `SCOREP_METRIC_APAPI_BUF_SIZE`/`VT_APAPI_BUF_SIZE` (default=4M)
 
