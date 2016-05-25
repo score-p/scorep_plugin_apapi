@@ -215,15 +215,30 @@ metric_properties_t * get_event_info(char * event_name)
 {
     /* convert prepend PAPI_ to event name to get the event code
      * and prepend APAPI_ to create a meaningful counter name */
-     int ret;
-    char papi_name[64];
-    char apapi_name[64];
-    memset(papi_name, 0, 64);
-    memset(apapi_name, 0, 64);
-    strcpy(papi_name, "PAPI_");
-    strcpy(apapi_name, "APAPI_");
-    strcat(papi_name, event_name);
-    strcat(apapi_name, event_name);
+    int ret;
+    
+    #define STR_SIZE 64
+    
+    char papi_name[STR_SIZE];
+    char apapi_name[STR_SIZE];
+    memset(papi_name, 0, STR_SIZE);
+    memset(apapi_name, 0, STR_SIZE);
+    
+    if (strncmp("PAPI_", event_name, 5) == 0)
+    {
+        /* these two calls obviously are safe */  
+        strcpy(apapi_name, "A");
+    }
+    else
+    {
+        /* these two calls obviously are safe */  
+        strcpy(papi_name, "PAPI_");
+        strcpy(apapi_name, "APAPI_");
+    }
+    
+    /* ... while these are not */
+    strncat(papi_name, event_name, strlen(papi_name)-STR_SIZE-1);
+    strncat(apapi_name, event_name, strlen(apapi_name)-STR_SIZE-1);
 
     /* parse the event name and put the event code into a global variable */
     if ((ret = PAPI_event_name_to_code(papi_name, &EventCodes[global_num_cntrs])) != PAPI_OK) {
