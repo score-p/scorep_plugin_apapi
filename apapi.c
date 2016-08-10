@@ -208,6 +208,12 @@ int32_t init(void)
         return -1;
     }
 
+    ret = PAPI_thread_init( pthread_self );
+    if (ret != PAPI_OK) {
+        fprintf(stderr, "cannot initialize thread support: %s\n", PAPI_strerror(ret));
+        return -1;
+    }
+
     return 0;
 }
 
