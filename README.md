@@ -1,10 +1,10 @@
-#apapi
+# apapi
 
-This is a asynchronous plugin for sampling papi performance counters.
+This is an asynchronous plugin for sampling PAPI performance counters.
 
-##Compilation and Installation
+## Compilation and Installation
 
-###Prerequisites
+### Prerequisites
 
 To compile this plugin, you need:
 
@@ -18,7 +18,7 @@ To compile this plugin, you need:
 
 * Score-P or VampirTrace (`5.14+`)
 
-###Building
+### Building
 
 1. Create a build directory
 
@@ -41,9 +41,9 @@ To compile this plugin, you need:
 
         export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:`pwd`
 
-##Usage
+## Usage
 
-###Score-P
+### Score-P
 
 To use this plugin, add it to the `SCOREP_METRIC_PLUGINS` environment variable, e.g.:
 
@@ -54,14 +54,14 @@ All avaible papi counter should be avaible in this plugin. To use them, simply s
 
     export SCOREP_METRIC_APAPI_PLUGIN="L2_TCM,FP_INS"
 
-###VampirTrace
+### VampirTrace
 
 All avaible papi counter should be avaible in this plugin. To use them, simply set the
 `VT_PLUGIN_CNTR_METRICS` environment variable. Prefix the PAPI counter name with A, e.g.
 
     export VT_PLUGIN_CNTR_METRICS="apapi_plugin_L2_TCM:apapi_plugin_FP_INS"
 
-###Environment variables
+### Environment variables
 
 * `SCOREP_METRIC_APAPI_INTERVAL_US`/`VT_APAPI_INTERVAL_US` (default=100000)
 
@@ -73,18 +73,18 @@ All avaible papi counter should be avaible in this plugin. To use them, simply s
     The size of the buffer for storing samples. Can be suffixed with G, M, and K.
 
     The buffer size is per thread, e.g., on a system with two papi counters, 12 threads and 4 MB
-    bufer size this would be 48 MB in total. Typically, a sample consists of a 8 byte timestamp and
+    buffer size this would be 48 MB in total. Typically, a sample consists of a 8 byte timestamp and
     8 byte per selected counter.
 
     If the buffer is too small, it might not be capable of storing all events. If this is the case,
     then a error message will be printed to `stderr`.
 
-###If anything fails
+### If anything fails
 
 1. Check whether the plugin library can be loaded from the `LD_LIBRARY_PATH`.
 
 2. Write a mail to the author.
 
-##Authors
+## Authors
 
 * Michael Werner (michael.werner3 at tu-dresden dot de)
