@@ -54,6 +54,10 @@ All avaible papi counter should be avaible in this plugin. To use them, simply s
 
     export SCOREP_METRIC_APAPI_PLUGIN="L2_TCM,FP_INS"
 
+In order to record papi native counters, you have to use the `NPAPI::` prefix, e.g.
+
+    export SCOREP_METRIC_APAPI_PLUGIN="NPAPI::perf::CYCLES"
+
 ### VampirTrace
 
 All avaible papi counter should be avaible in this plugin. To use them, simply set the
