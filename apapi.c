@@ -222,29 +222,36 @@ metric_properties_t * get_event_info(char * event_name)
     /* convert prepend PAPI_ to event name to get the event code
      * and prepend APAPI_ to create a meaningful counter name */
     int ret;
-    
+
     #define STR_SIZE 64
-    
+    const char *papi_native_prefix = "NPAPI::";
+    const size_t native_prefix_len = strlen(papi_native_prefix);
+
     char papi_name[STR_SIZE];
     char apapi_name[STR_SIZE];
     memset(papi_name, 0, STR_SIZE);
     memset(apapi_name, 0, STR_SIZE);
-    
+
     if (strncmp("PAPI_", event_name, 5) == 0)
     {
-        /* these two calls obviously are safe */  
+        /* these two calls obviously are safe */
         strcpy(apapi_name, "A");
+    }
+    else if (strncmp(papi_native_prefix, event_name, native_prefix_len) == 0)
+    {
+        event_name = &event_name[native_prefix_len];
+        strcpy(apapi_name, papi_native_prefix);
     }
     else
     {
-        /* these two calls obviously are safe */  
+        /* these two calls obviously are safe */
         strcpy(papi_name, "PAPI_");
         strcpy(apapi_name, "APAPI_");
     }
-    
+
     /* ... while these are not */
     strncat(papi_name, event_name, strlen(papi_name)-STR_SIZE-1);
-    strncat(apapi_name, event_name, strlen(apapi_name)-STR_SIZE-1);
+    strncat(apapi_name, event_name, strlen(apapi_name) - STR_SIZE - 1);
 
     /* parse the event name and put the event code into a global variable */
     if ((ret = PAPI_event_name_to_code(papi_name, &EventCodes[global_num_cntrs])) != PAPI_OK) {
@@ -252,7 +259,7 @@ metric_properties_t * get_event_info(char * event_name)
         return NULL;
     }
 
-    /* check if the counter is avaible on this architecture */
+    /* check if the counter is available on this architecture */
     if ((ret = PAPI_query_event(EventCodes[global_num_cntrs])) != PAPI_OK) {
         fprintf(stderr, "APAPI: event %s is not avaible on this architecture\n", event_name);
         return NULL;
@@ -260,8 +267,7 @@ metric_properties_t * get_event_info(char * event_name)
 
     global_num_cntrs++;
 
-    metric_properties_t *return_values = malloc(2 *
-        sizeof(metric_properties_t));
+    metric_properties_t *return_values = malloc(2 * sizeof(metric_properties_t));
 
     if (return_values == NULL)
     {
