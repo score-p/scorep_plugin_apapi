@@ -50,9 +50,9 @@ To use this plugin, add it to the `SCOREP_METRIC_PLUGINS` environment variable, 
     export SCOREP_METRIC_PLUGINS="apapi_plugin"
 
 All avaible papi counter should be avaible in this plugin. To use them, simply set the
-`SCOREP_METRIC_APAPI_PLUGIN` environment variable. Prefix the PAPI counter name with A, e.g.
+desired PAPI counters in the `SCOREP_METRIC_APAPI_PLUGIN` environment variable.
 
-    export SCOREP_METRIC_APAPI_PLUGIN="L2_TCM,FP_INS"
+    export SCOREP_METRIC_APAPI_PLUGIN="PAPI_L2_TCM,PAPI_FP_INS"
 
 ### VampirTrace
 

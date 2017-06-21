@@ -219,40 +219,24 @@ int32_t init(void)
 
 metric_properties_t * get_event_info(char * event_name)
 {
-    /* convert prepend PAPI_ to event name to get the event code
-     * and prepend APAPI_ to create a meaningful counter name */
+    /* Prepend APAPI_ to create a meaningful counter name */
     int ret;
-    
-    #define STR_SIZE 64
-    
-    char papi_name[STR_SIZE];
+
+    #define STR_SIZE 128
+
     char apapi_name[STR_SIZE];
-    memset(papi_name, 0, STR_SIZE);
     memset(apapi_name, 0, STR_SIZE);
-    
-    if (strncmp("PAPI_", event_name, 5) == 0)
-    {
-        /* these two calls obviously are safe */  
-        strcpy(apapi_name, "A");
-    }
-    else
-    {
-        /* these two calls obviously are safe */  
-        strcpy(papi_name, "PAPI_");
-        strcpy(apapi_name, "APAPI_");
-    }
-    
-    /* ... while these are not */
-    strncat(papi_name, event_name, strlen(papi_name)-STR_SIZE-1);
-    strncat(apapi_name, event_name, strlen(apapi_name)-STR_SIZE-1);
+    strcpy(apapi_name, "A");
+    strncat(apapi_name, event_name, strlen(apapi_name) - STR_SIZE - 1);
 
     /* parse the event name and put the event code into a global variable */
-    if ((ret = PAPI_event_name_to_code(papi_name, &EventCodes[global_num_cntrs])) != PAPI_OK) {
-        fprintf(stderr, "APAPI: Failed to encode event %s: %s\n", papi_name, PAPI_strerror(ret));
+    if ((ret = PAPI_event_name_to_code(event_name, &EventCodes[global_num_cntrs])) != PAPI_OK)
+    {
+        fprintf(stderr, "APAPI: Failed to encode event %s: %s\n", event_name, PAPI_strerror(ret));
         return NULL;
     }
 
-    /* check if the counter is avaible on this architecture */
+    /* check if the counter is available on this architecture */
     if ((ret = PAPI_query_event(EventCodes[global_num_cntrs])) != PAPI_OK) {
         fprintf(stderr, "APAPI: event %s is not avaible on this architecture\n", event_name);
         return NULL;
@@ -260,8 +244,7 @@ metric_properties_t * get_event_info(char * event_name)
 
     global_num_cntrs++;
 
-    metric_properties_t *return_values = malloc(2 *
-        sizeof(metric_properties_t));
+    metric_properties_t *return_values = malloc(2 * sizeof(metric_properties_t));
 
     if (return_values == NULL)
     {
