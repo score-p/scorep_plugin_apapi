@@ -222,7 +222,7 @@ metric_properties_t * get_event_info(char * event_name)
     /* Prepend APAPI_ to create a meaningful counter name */
     int ret;
 
-    #define STR_SIZE 64
+    #define STR_SIZE 128
 
     char apapi_name[STR_SIZE];
     memset(apapi_name, 0, STR_SIZE);
