@@ -227,7 +227,7 @@ metric_properties_t * get_event_info(char * event_name)
     char apapi_name[STR_SIZE];
     memset(apapi_name, 0, STR_SIZE);
     strcpy(apapi_name, "A");
-    strncat(apapi_name, event_name, strlen(apapi_name) - STR_SIZE - 1);
+    strncat(apapi_name, event_name, STR_SIZE - 1 - strlen(apapi_name));
 
     /* parse the event name and put the event code into a global variable */
     if ((ret = PAPI_event_name_to_code(event_name, &EventCodes[global_num_cntrs])) != PAPI_OK)
