@@ -37,6 +37,13 @@ endif(NOT IS_ABSOLUTE ${__PAPI_INC})
 message(STATUS "Found PAPI headers in ${__PAPI_INC}.")
 
 
+
+find_path(__PAPI_LIB NAMES "libpapi.so" HINTS ${PAPI_LIB} $ENV{PAPI_LIB})
+if(NOT IS_ABSOLUTE ${__PAPI_LIB})
+    message(FATAL_ERROR "Could not find PAPI lib. Specify the path with -DPAPI_LIB=<path to PAPI>.")
+endif(NOT IS_ABSOLUTE ${__PAPI_LIB})
+message(STATUS "Found PAPI lib in ${__PAPI_LIB}.")
+
 #additional c flags
 set(CMAKE_C_FLAGS "-D_GNU_SOURCE -std=c11 -O2 -g")
 #debugging c flags
@@ -44,8 +51,9 @@ set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -DHAVE_DEBUG -O0 -Wstrict-protot
 #release c flags
 set(CMAKE_C_FLAGS_RELEASE "-Os")
 
+link_directories(${__PAPI_LIB})
 include_directories( ${__PAPI_INC})
 add_library(${PROJECT_NAME} SHARED ${PLUGIN_SOURCE})
-target_link_libraries(${PROJECT_NAME} pthread m)
+target_link_libraries(${PROJECT_NAME} pthread m papi)
 
 install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION lib)

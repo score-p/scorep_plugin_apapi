@@ -28,10 +28,10 @@ To compile this plugin, you need:
 2. Invoke CMake
 
     Specify the VampirTrace and/or Score-P and PAPI directory if it is not in the default path with
-    `-DVT_DIR=<PATH>` and/or `-DSCOREP_DIR=<PATH>` respectivly `-DPAPI_INC=<PATH>`. The plugin will
-    use alternatively the environment variables `VT_DIR`, `SCOREP_DIR` and  `PAPI_INC`, e.g.
+    `-DVT_DIR=<PATH>` and/or `-DSCOREP_DIR=<PATH>` respectivly `-DPAPI_INC=<PATH>`, `-DPAPI_LIB=<PATH>` . The plugin will
+    use alternatively the environment variables `VT_DIR`, `SCOREP_DIR`, `PAPI_INC` and `PAPI_LIB`, e.g.
 
-        cmake .. -DSCOREP_DIR=/opt/scorep -DPAPI_INC=/opt/papi/inc
+        cmake .. -DSCOREP_DIR=/opt/scorep -DPAPI_INC=/opt/papi/include -DPAPI_LIB=/opt/papi/lib
 
 3. Invoke make
 
