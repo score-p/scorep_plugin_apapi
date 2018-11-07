@@ -39,7 +39,7 @@ if(NOT SCOREP_FOUND OR NOT BACKEND_SCOREP)
 endif()
 
 find_package(PAPI REQUIRED)
-option(LINK_WITH_PAPI "Link this plugin directly with libpapi.so" NO)
+option(LINK_WITH_PAPI "Link this plugin directly with libpapi.so" ON)
 target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${PAPI_INCLUDE_DIRS})
 if(LINK_WITH_PAPI)
     target_link_libraries(${PROJECT_NAME} PRIVATE ${PAPI_LIBRARIES})
